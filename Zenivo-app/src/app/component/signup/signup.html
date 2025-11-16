@@ -1,0 +1,71 @@
+<div class="signup-container">
+  <h2>Create an Account</h2>
+
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <!-- Username -->
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input id="username" type="text" formControlName="username" placeholder="Enter username" />
+      <div class="error" *ngIf="hasError('username')">{{ getErrorMessage('username') }}</div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" placeholder="Enter email" />
+      <div class="error" *ngIf="hasError('email')">{{ getErrorMessage('email') }}</div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password1">Password</label>
+      <div class="password-field">
+        <input
+          id="password1"
+          [type]="showPassword1 ? 'text' : 'password'"
+          formControlName="password1"
+          placeholder="Enter password"
+          (input)="checkPasswordStrength()"
+        />
+        <button type="button" (click)="togglePasswordVisibility('password1')">
+          {{ showPassword1 ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+      <div class="error" *ngIf="hasError('password1')">{{ getErrorMessage('password1') }}</div>
+      <div class="password-strength">
+        <div
+          class="strength-bar"
+          [style.width.%]="(passwordStrength / 5) * 100"
+          [style.background]="getPasswordStrengthColor()"
+        ></div>
+        <small>{{ passwordStrengthText }}</small>
+      </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="password2">Confirm Password</label>
+      <div class="password-field">
+        <input
+          id="password2"
+          [type]="showPassword2 ? 'text' : 'password'"
+          formControlName="password2"
+        />
+        <button type="button" (click)="togglePasswordVisibility('password2')">
+          {{ showPassword2 ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+      <div class="error" *ngIf="hasError('password2')">{{ getErrorMessage('password2') }}</div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" [disabled]="isLoading">
+      {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
+    </button>
+  </form>
+
+  <p class="login-text">
+    Already have an account?
+    <a (click)="navigateToLogin()" class="login-link">Login</a>
+  </p>
+</div>
