@@ -1,0 +1,163 @@
+<div class="journals-container">
+  <!-- Header -->
+  <div class="journals-header">
+    <div class="header-content">
+      <h1>📔 My Journals</h1>
+      <p>Keep track of your thoughts, feelings, and memories</p>
+    </div>
+    <button
+      class="btn-new-journal"
+      (click)="toggleForm()"
+      [class.active]="showForm"
+    >
+      {{ showForm ? '✕ Cancel' : '✍️ Write Journal' }}
+    </button>
+  </div>
+
+  <!-- Journal Form -->
+  <div class="journal-form-section" *ngIf="showForm">
+    <div class="form-card">
+      <h2>{{ editingId ? 'Edit Journal' : 'Write a New Journal' }}</h2>
+
+      <form [formGroup]="journalForm" (ngSubmit)="onSubmit()">
+        <!-- Title -->
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            placeholder="Give your journal a title..."
+            maxlength="100"
+          />
+          <div class="error" *ngIf="hasError('title')">
+            {{ getErrorMessage('title') }}
+          </div>
+          <span class="char-count">
+            {{ journalForm.get('title')?.value?.length || 0 }}/100
+          </span>
+        </div>
+
+        <!-- Mood Selector -->
+        <div class="form-group">
+          <label>How are you feeling?</label>
+          <div class="mood-selector">
+            <button
+              type="button"
+              class="mood-btn"
+              *ngFor="let mood of moods"
+              [class.selected]="selectedMood === mood.value"
+              (click)="selectedMood = mood.value"
+              title="{{ mood.label }}"
+            >
+              <span class="mood-emoji">{{ mood.emoji }}</span>
+              <span class="mood-label">{{ mood.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="form-group">
+          <label for="content">Your Thoughts</label>
+          <textarea
+            id="content"
+            formControlName="content"
+            placeholder="Write your journal entry here..."
+            rows="10"
+          ></textarea>
+          <div class="error" *ngIf="hasError('content')">
+            {{ getErrorMessage('content') }}
+          </div>
+          <span class="char-count">
+            {{ journalForm.get('content')?.value?.length || 0 }} characters
+          </span>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-group">
+          <label for="tagInput">Add Tags (press Enter to add)</label>
+          <div class="tag-input-wrapper">
+            <input
+              id="tagInput"
+              type="text"
+              [(ngModel)]="tagInput"
+              (keypress)="onTagKeyPress($event)"
+              placeholder="Add tags like #achievement, #reflection..."
+              [ngModelOptions]="{ standalone: true }"
+              class="tag-input"
+            />
+            <button type="button" class="btn-add-tag" (click)="addTag()">
+              Add
+            </button>
+          </div>
+          <div class="tags-list">
+            <span class="tag" *ngFor="let tag of currentTags; let i = index">
+              {{ tag }}
+              <button type="button" class="tag-remove" (click)="removeTag(i)">
+                ✕
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="isSaving || journalForm.invalid"
+        >
+          {{ isSaving ? 'Saving...' : editingId ? 'Update Journal' : 'Save Journal' }}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Journals List -->
+  <div class="journals-list-section">
+    <div *ngIf="isLoading" class="loading">
+      <p>Loading your journals...</p>
+    </div>
+
+    <div *ngIf="!isLoading && journals.length === 0" class="empty-state">
+      <div class="empty-icon">📝</div>
+      <h3>No journals yet</h3>
+      <p>Start writing your first journal to capture your thoughts and memories</p>
+      <button class="btn-new-journal" (click)="toggleForm()">
+        ✍️ Start Writing
+      </button>
+    </div>
+
+    <div class="journals-grid" *ngIf="!isLoading && journals.length > 0">
+      <div class="journal-card" *ngFor="let journal of journals">
+        <div class="journal-header">
+          <div class="journal-info">
+            <h3>{{ journal.title }}</h3>
+            <p class="date">{{ formatDate(journal.created_at) }}</p>
+          </div>
+          <div class="journal-mood">
+            {{ getMoodEmoji(journal.mood) }}
+          </div>
+        </div>
+
+        <p class="journal-content">
+          {{ truncateContent(journal.thoughts) }}
+        </p>
+
+        <div class="journal-tags" *ngIf="journal.tags && journal.tags.length > 0">
+          <span class="tag" *ngFor="let tag of journal.tags">
+            {{ tag }}
+          </span>
+        </div>
+
+        <div class="journal-actions">
+          <button class="btn-edit" (click)="editJournal(journal)">
+            ✏️ Edit
+          </button>
+          <button class="btn-delete" (click)="deleteJournal(journal.id)">
+            🗑️ Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -49,6 +49,9 @@ INSTALLED_APPS = [
 
     # Optional: DRF Token auth (not needed with JWT)
     'rest_framework.authtoken',
+    'User',
+    'Dashboard',
+    'journal',
 ]
 
 SITE_ID = 1
@@ -100,7 +103,7 @@ WSGI_APPLICATION = 'ZenivoBackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Zenivo_db',
+        'NAME': 'zenivo_db',
         'USER': 'postgres',
         'PASSWORD': 'password@6',
         'HOST': 'localhost',        # or IP address of your DB server
@@ -133,6 +136,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -209,3 +216,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
 CORS_ALLOW_CREDENTIALS = True
+AUTH_USER_MODEL = 'User.User'
+
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'User.serializers.CustomRegisterSerializer',
+}
