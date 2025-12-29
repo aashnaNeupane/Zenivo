@@ -1,0 +1,85 @@
+<div class="login-container">
+  <h2>Welcome Back</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- Username/Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="text"
+        formControlName="email"
+        placeholder="Enter your email"
+        autocomplete="email"
+      />
+      <div class="error" *ngIf="hasError('email')">
+        {{ getErrorMessage('email') }}
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <div class="password-field">
+        <input
+          id="password"
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        />
+        <button
+          type="button"
+          (click)="togglePasswordVisibility()"
+          class="toggle-btn"
+        >
+          {{ showPassword ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+      <div class="error" *ngIf="hasError('password')">
+        {{ getErrorMessage('password') }}
+      </div>
+    </div>
+
+    <!-- Remember Me & Forgot Password -->
+    <div class="form-footer">
+      <div class="remember-me">
+        <input
+          type="checkbox"
+          id="rememberMe"
+          (change)="onRememberMeChange($event)"
+        />
+        <label for="rememberMe">Remember me</label>
+      </div>
+      <a (click)="navigateToForgotPassword()" class="forgot-password-link">
+        Forgot Password?
+      </a>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" [disabled]="isLoading">
+      {{ isLoading ? 'Logging in...' : 'Sign In' }}
+    </button>
+  </form>
+
+  <!-- Signup Link -->
+  <p class="signup-text">
+    Don't have an account?
+    <a (click)="navigateToSignup()" class="signup-link">Create one here</a>
+  </p>
+
+  <!-- Divider -->
+  <div class="divider">
+    <span>or</span>
+  </div>
+
+  <!-- Social Login (Optional) -->
+  <div class="social-login">
+    <button type="button" class="btn-social">
+      <span>🔵</span> Continue with Google
+    </button>
+    <button type="button" class="btn-social">
+      <span>⚫</span> Continue with GitHub
+    </button>
+  </div>
+</div>

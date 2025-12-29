@@ -1,0 +1,55 @@
+<div class="profile-container">
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-state">
+    <p>Loading profile...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !isLoading" class="error-state">
+    <p>{{ error }}</p>
+    <button (click)="loadProfile()">Retry</button>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="profileData && !isLoading" class="profile-content">
+
+    <!-- Header -->
+    <div class="profile-header">
+      <div class="avatar">{{ getAvatarInitials() }}</div>
+      <div class="header-info">
+        <h1>{{ profileData.username }}</h1>
+        <div class="role-badge" [style.background]="getRoleBadgeColor()">
+          <span>{{ getRoleEmoji() }}</span> {{ profileData.role }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Info -->
+    <div class="detail-card">
+      <h2>Account Information</h2>
+      <p><strong>Username:</strong> {{ profileData.username }}</p>
+      <p><strong>Email:</strong> {{ profileData.email }}</p>
+      <p *ngIf="profileData.first_name || profileData.last_name">
+        <strong>Full Name:</strong> {{ profileData.first_name }} {{ profileData.last_name }}
+      </p>
+    </div>
+
+    <!-- Role Info -->
+    <div class="detail-card">
+      <h2>Role & Access</h2>
+      <p><strong>Role:</strong> {{ profileData.role }}</p>
+      <p><strong>Dashboard:</strong> {{ getDashboardTypeLabel() }}</p>
+      <p><strong>Access Level:</strong> Active</p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="detail-card">
+      <h2>Account Statistics</h2>
+      <p><strong>ID:</strong> {{ profileData.id }}</p>
+      <p><strong>Status:</strong> Verified</p>
+    </div>
+
+  </div>
+
+</div>
