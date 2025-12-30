@@ -222,3 +222,33 @@ AUTH_USER_MODEL = 'User.User'
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'User.serializers.CustomRegisterSerializer',
 }
+
+ACCOUNT_ADAPTER = 'User.adapters.CustomAccountAdapter'
+
+# -----------------------------
+# Logging Configuration
+# -----------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'User': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
