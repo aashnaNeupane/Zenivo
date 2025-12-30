@@ -16,6 +16,34 @@
       <div class="error" *ngIf="hasError('email')">{{ getErrorMessage('email') }}</div>
     </div>
 
+    <!-- First Name -->
+    <div class="form-group">
+      <label for="first_name">First Name</label>
+      <input id="first_name" type="text" formControlName="first_name" placeholder="Enter first name" />
+      <div class="error" *ngIf="hasError('first_name')">{{ getErrorMessage('first_name') }}</div>
+    </div>
+
+    <!-- Last Name -->
+    <div class="form-group">
+      <label for="last_name">Last Name</label>
+      <input id="last_name" type="text" formControlName="last_name" placeholder="Enter last name" />
+      <div class="error" *ngIf="hasError('last_name')">{{ getErrorMessage('last_name') }}</div>
+    </div>
+
+    <!-- Phone Number -->
+    <div class="form-group">
+      <label for="phone_number">Phone Number</label>
+      <input id="phone_number" type="tel" formControlName="phone_number" placeholder="Enter phone number (digits only)" />
+      <div class="error" *ngIf="hasError('phone_number')">{{ getErrorMessage('phone_number') }}</div>
+    </div>
+
+    <!-- Date of Birth -->
+    <div class="form-group">
+      <label for="date_of_birth">Date of Birth</label>
+      <input id="date_of_birth" type="date" formControlName="date_of_birth" [max]="maxDate" />
+      <div class="error" *ngIf="hasError('date_of_birth')">{{ getErrorMessage('date_of_birth') }}</div>
+    </div>
+
     <!-- Password -->
     <div class="form-group">
       <label for="password1">Password</label>

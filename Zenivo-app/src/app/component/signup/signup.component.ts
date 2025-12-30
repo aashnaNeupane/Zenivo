@@ -20,6 +20,7 @@ export class Signup implements OnInit {
   showPassword2: boolean = false;
   passwordStrength: number = 0;
   passwordStrengthText: string = '';
+  maxDate: string = '';
 
   private apiUrl = 'http://127.0.0.1:8000/api/auth/registration/';
 
@@ -32,13 +33,21 @@ export class Signup implements OnInit {
     this.signupForm = this.createForm();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Set max date to today (user must be at least 16, so effectively today)
+    const today = new Date();
+    this.maxDate = today.toISOString().split('T')[0];
+  }
 
   private createForm(): FormGroup {
     return this.fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(150)]],
         email: ['', [Validators.required, Validators.email]],
+        first_name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(150)]],
+        last_name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(150)]],
+        phone_number: ['', [Validators.required, Validators.pattern(/^\d+$/), Validators.minLength(8), Validators.maxLength(15)]],
+        date_of_birth: ['', [Validators.required, this.dateOfBirthValidator]],
         password1: ['', [Validators.required, Validators.minLength(8)]],
         password2: ['', [Validators.required, Validators.minLength(8)]]
       },
@@ -51,6 +60,26 @@ export class Signup implements OnInit {
     const password2 = control.get('password2');
     if (!password1 || !password2) return null;
     return password1.value === password2.value ? null : { passwordMismatch: true };
+  }
+
+  private dateOfBirthValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    
+    const birthDate = new Date(control.value);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear() - 
+                (today.getMonth() < birthDate.getMonth() || 
+                 (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
+    
+    if (birthDate >= today) {
+      return { futureDate: true };
+    }
+    
+    if (age < 16) {
+      return { tooYoung: true };
+    }
+    
+    return null;
   }
 
   togglePasswordVisibility(field: string): void {
@@ -104,6 +133,10 @@ export class Signup implements OnInit {
     const formData = {
       username: this.signupForm.get('username')?.value.trim(),
       email: this.signupForm.get('email')?.value.trim(),
+      first_name: this.signupForm.get('first_name')?.value.trim(),
+      last_name: this.signupForm.get('last_name')?.value.trim(),
+      phone_number: this.signupForm.get('phone_number')?.value.trim(),
+      date_of_birth: this.signupForm.get('date_of_birth')?.value,
       password1: this.signupForm.get('password1')?.value,
       password2: this.signupForm.get('password2')?.value
     };
@@ -121,6 +154,10 @@ export class Signup implements OnInit {
         if (error.error) {
           if (error.error.username) this.snackBar.open(error.error.username[0], 'Close', { duration: 3000 });
           else if (error.error.email) this.snackBar.open(error.error.email[0], 'Close', { duration: 3000 });
+          else if (error.error.first_name) this.snackBar.open(error.error.first_name[0], 'Close', { duration: 3000 });
+          else if (error.error.last_name) this.snackBar.open(error.error.last_name[0], 'Close', { duration: 3000 });
+          else if (error.error.phone_number) this.snackBar.open(error.error.phone_number[0], 'Close', { duration: 3000 });
+          else if (error.error.date_of_birth) this.snackBar.open(error.error.date_of_birth[0], 'Close', { duration: 3000 });
           else if (error.error.password1) this.snackBar.open(error.error.password1[0], 'Close', { duration: 3000 });
           else if (error.error.password2) this.snackBar.open(error.error.password2[0], 'Close', { duration: 3000 });
           else if (error.error.non_field_errors) this.snackBar.open(error.error.non_field_errors[0], 'Close', { duration: 3000 });
@@ -143,6 +180,12 @@ export class Signup implements OnInit {
     if (control.errors['minlength']) return `${this.formatFieldName(fieldName)} must be at least ${control.errors['minlength'].requiredLength} characters`;
     if (control.errors['maxlength']) return `${this.formatFieldName(fieldName)} cannot exceed ${control.errors['maxlength'].requiredLength} characters`;
     if (control.errors['email']) return 'Please enter a valid email address';
+    if (control.errors['pattern']) {
+      if (fieldName === 'phone_number') return 'Phone number must contain only digits';
+      return `${this.formatFieldName(fieldName)} format is invalid`;
+    }
+    if (control.errors['futureDate']) return 'Date of birth cannot be in the future';
+    if (control.errors['tooYoung']) return 'You must be at least 16 years old';
     if (fieldName === 'password2' && this.signupForm.errors?.['passwordMismatch']) return 'Passwords do not match';
     return '';
   }
